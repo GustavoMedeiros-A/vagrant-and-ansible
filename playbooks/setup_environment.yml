@@ -1,0 +1,35 @@
+---
+- name: Setup Environment on Vagrant VM to run ENADE project
+  hosts: java_servers
+  become: yes
+  tasks:
+    - name: Update apt repository cache
+      apt:
+        update_cache: yes
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Install Docker Compose
+      apt:
+        name: docker-compose
+        state: present
+
+    - name: Add current user to docker group
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes
+
+    - name: Install Java
+      apt:
+        name: default-jdk
+        state: present
+
+    - name: Ensure Docker service is running
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
